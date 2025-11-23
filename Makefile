@@ -10,7 +10,7 @@ test:
 # Run demo program
 run:
 	@echo "Running Milestone 2..."
-	go run cmd/phase_2/main.go
+	go run cmd/phase_3/main.go
 
 # Format code
 fmt:
