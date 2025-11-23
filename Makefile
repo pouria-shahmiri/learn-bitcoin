@@ -9,8 +9,8 @@ test:
 
 # Run demo program (default: phase 7)
 run:
-	@echo "Running Milestone 7..."
-	go run cmd/phase_7/main.go
+	@echo "Running Milestone 8..."
+	go run cmd/phase_8/main.go
 
 # Run individual phases
 phase1:
@@ -40,6 +40,10 @@ phase6:
 phase7:
 	@echo "Running Milestone 7..."
 	go run cmd/phase_7/main.go
+
+phase8:
+	@echo "Running Milestone 8..."
+	go run cmd/phase_8/main.go
 
 # Format code
 fmt:

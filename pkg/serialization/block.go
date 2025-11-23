@@ -113,17 +113,31 @@ func SerializeBlock(block *types.Block) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-/*
-```
-**Block header format (exactly 80 bytes):**
-```
-Offset  Size  Field
-0       4     Version
-4       32    Previous block hash
-36      32    Merkle root
-68      4     Timestamp
-72      4     Bits (difficulty)
-76      4     Nonce
+// DeserializeBlock reads a complete block
+func DeserializeBlock(data []byte) (*types.Block, error) {
+	r := bytes.NewReader(data)
 
-Total: 80 bytes
-*/
+	header, err := DeserializeBlockHeader(r)
+	if err != nil {
+		return nil, err
+	}
+
+	txCount, err := ReadVarInt(r)
+	if err != nil {
+		return nil, err
+	}
+
+	txs := make([]types.Transaction, txCount)
+	for i := uint64(0); i < txCount; i++ {
+		tx, err := DeserializeTransaction(r)
+		if err != nil {
+			return nil, err
+		}
+		txs[i] = *tx
+	}
+
+	return &types.Block{
+		Header:       *header,
+		Transactions: txs,
+	}, nil
+}

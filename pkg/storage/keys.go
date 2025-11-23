@@ -3,6 +3,7 @@ package storage
 import (
 	"encoding/binary"
 	"fmt"
+
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/types"
 )
 
@@ -10,21 +11,24 @@ import (
 const (
 	// Block data: 'b' + block_hash -> serialized block
 	PrefixBlock = 'b'
-	
+
 	// Block index: 'h' + height -> block_hash
 	PrefixHeight = 'h'
-	
+
 	// Transaction index: 't' + tx_hash -> block_hash + tx_index
 	PrefixTx = 't'
-	
+
 	// Chain state: 'c' + key -> value
 	PrefixChainState = 'c'
+
+	// Block height index: 'i' + block_hash -> height
+	PrefixBlockHeight = 'i'
 )
 
 // Chain state keys
 const (
-	KeyBestBlockHash   = "bestblock"   // Current chain tip hash
-	KeyBestBlockHeight = "bestheight"  // Current chain height
+	KeyBestBlockHash   = "bestblock"  // Current chain tip hash
+	KeyBestBlockHeight = "bestheight" // Current chain height
 )
 
 // BlockKey creates key for storing block data
@@ -50,6 +54,15 @@ func HeightKey(height uint64) []byte {
 func TxKey(hash types.Hash) []byte {
 	key := make([]byte, 1+32)
 	key[0] = PrefixTx
+	copy(key[1:], hash[:])
+	return key
+}
+
+// BlockHeightKey creates key for block hash to height index
+// Format: 'i' + block_hash
+func BlockHeightKey(hash types.Hash) []byte {
+	key := make([]byte, 1+32)
+	key[0] = PrefixBlockHeight
 	copy(key[1:], hash[:])
 	return key
 }

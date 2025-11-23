@@ -70,10 +70,15 @@ func (bs *BlockchainStorage) SaveBlock(block *types.Block, height uint64) error 
 		batch.Put(txKey, txLocation)
 	}
 
-	// 4. Update chain state (if this is new tip)
-	batch.Put(ChainStateKey(KeyBestBlockHash), blockHash[:])
+	// 4. Store block height index (Hash -> Height)
+	blockHeightKey := BlockHeightKey(blockHash)
 	heightBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(heightBytes, height)
+	batch.Put(blockHeightKey, heightBytes)
+
+	// 5. Update chain state (if this is new tip)
+	batch.Put(ChainStateKey(KeyBestBlockHash), blockHash[:])
+	// heightBytes is already created above
 	batch.Put(ChainStateKey(KeyBestBlockHeight), heightBytes)
 
 	// Commit everything atomically
@@ -113,6 +118,25 @@ func (bs *BlockchainStorage) GetBlockByHeight(height uint64) (*types.Block, erro
 
 	// Then get block by hash
 	return bs.GetBlock(hash)
+}
+
+// GetBlockHeight retrieves height by block hash
+func (bs *BlockchainStorage) GetBlockHeight(hash types.Hash) (uint64, error) {
+	key := BlockHeightKey(hash)
+	value, err := bs.db.Get(key)
+	if err != nil {
+		return 0, err
+	}
+
+	if value == nil {
+		return 0, fmt.Errorf("block height not found for hash: %s", hash)
+	}
+
+	if len(value) != 8 {
+		return 0, fmt.Errorf("invalid height value length")
+	}
+
+	return binary.BigEndian.Uint64(value), nil
 }
 
 // HasBlock checks if block exists
