@@ -3,9 +3,9 @@ package storage
 import (
 	"fmt"
 	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/syndtr/goleveldb/leveldb/iterator" // ADD THIS LINE
 	"github.com/syndtr/goleveldb/leveldb/opt"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"github.com/syndtr/goleveldb/leveldb/iterator"  // ADD THIS LINE
 )
 
 // Database wraps LevelDB with Bitcoin-specific operations
@@ -19,12 +19,12 @@ func OpenDatabase(path string) (*Database, error) {
 	opts := &opt.Options{
 		Compression: opt.SnappyCompression,
 	}
-	
+
 	db, err := leveldb.OpenFile(path, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
-	
+
 	return &Database{db: db}, nil
 }
 

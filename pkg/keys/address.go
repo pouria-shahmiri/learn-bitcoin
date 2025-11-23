@@ -2,7 +2,7 @@ package keys
 
 import (
 	"fmt"
-	
+
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/encoding"
 )
 
@@ -10,13 +10,13 @@ import (
 const (
 	// P2PKH (Pay-to-PubKey-Hash) - starts with '1'
 	AddressTypeP2PKH byte = 0x00
-	
+
 	// P2SH (Pay-to-Script-Hash) - starts with '3'
 	AddressTypeP2SH byte = 0x05
-	
+
 	// Testnet P2PKH - starts with 'm' or 'n'
 	AddressTypeTestnetP2PKH byte = 0x6f
-	
+
 	// Testnet P2SH - starts with '2'
 	AddressTypeTestnetP2SH byte = 0xc4
 )
@@ -32,7 +32,7 @@ func NewAddress(version byte, hash []byte) (*Address, error) {
 	if len(hash) != 20 {
 		return nil, fmt.Errorf("hash must be 20 bytes, got %d", len(hash))
 	}
-	
+
 	return &Address{
 		version: version,
 		hash:    make([]byte, 20),
@@ -57,16 +57,16 @@ func DecodeAddress(address string) (*Address, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid address: %w", err)
 	}
-	
+
 	if len(hash) != 20 {
 		return nil, fmt.Errorf("invalid address hash length: %d", len(hash))
 	}
-	
+
 	addr := &Address{
 		version: version,
 		hash:    hash,
 	}
-	
+
 	return addr, nil
 }
 
@@ -77,14 +77,14 @@ func (addr *Address) String() string {
 
 // IsP2PKH checks if address is Pay-to-PubKey-Hash
 func (addr *Address) IsP2PKH() bool {
-	return addr.version == AddressTypeP2PKH || 
-	       addr.version == AddressTypeTestnetP2PKH
+	return addr.version == AddressTypeP2PKH ||
+		addr.version == AddressTypeTestnetP2PKH
 }
 
 // IsP2SH checks if address is Pay-to-Script-Hash
 func (addr *Address) IsP2SH() bool {
-	return addr.version == AddressTypeP2SH || 
-	       addr.version == AddressTypeTestnetP2SH
+	return addr.version == AddressTypeP2SH ||
+		addr.version == AddressTypeTestnetP2SH
 }
 
 // Hash returns the 20-byte address hash

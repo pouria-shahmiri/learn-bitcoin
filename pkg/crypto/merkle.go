@@ -22,7 +22,7 @@ func ComputeMerkleRoot(txHashes []types.Hash) types.Hash {
 		// Process pairs
 		for i := 0; i < len(currentLevel); i += 2 {
 			left := currentLevel[i]
-			
+
 			var right types.Hash
 			if i+1 < len(currentLevel) {
 				// Normal case: pair exists
@@ -53,7 +53,7 @@ func BuildMerkleTree(txHashes []types.Hash) [][]types.Hash {
 	var tree [][]types.Hash
 	currentLevel := make([]types.Hash, len(txHashes))
 	copy(currentLevel, txHashes)
-	
+
 	// Add base level
 	tree = append(tree, currentLevel)
 
@@ -78,8 +78,6 @@ func BuildMerkleTree(txHashes []types.Hash) [][]types.Hash {
 
 	return tree
 }
-
-
 
 /*
 ```

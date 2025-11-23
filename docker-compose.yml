@@ -1,0 +1,203 @@
+version: '3.8'
+
+services:
+  # Miner Node 1 - Primary miner
+  miner1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-miner1
+    hostname: miner1
+    environment:
+      - NODE_ID=miner1
+      - RPC_PORT=8332
+      - P2P_PORT=8333
+      - DATA_DIR=/root/.bitcoin/data
+      - NETWORK=regtest
+      - MINER_ADDRESS=1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+      - MINING_ENABLED=true
+      - INITIAL_PEERS=miner2:8333,miner3:8333
+      - LOG_LEVEL=info
+      - AUTO_MINE=true
+      - MINE_INTERVAL=10
+    ports:
+      - "18332:8332"  # RPC
+      - "18333:8333"  # P2P
+    volumes:
+      - miner1_data:/root/.bitcoin/data
+    networks:
+      bitcoin_net:
+        ipv4_address: 172.20.0.10
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Miner Node 2
+  miner2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-miner2
+    hostname: miner2
+    environment:
+      - NODE_ID=miner2
+      - RPC_PORT=8332
+      - P2P_PORT=8333
+      - DATA_DIR=/root/.bitcoin/data
+      - NETWORK=regtest
+      - MINER_ADDRESS=1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2
+      - MINING_ENABLED=true
+      - INITIAL_PEERS=miner1:8333,miner3:8333
+      - LOG_LEVEL=info
+      - AUTO_MINE=true
+      - MINE_INTERVAL=15
+    ports:
+      - "28332:8332"  # RPC
+      - "28333:8333"  # P2P
+    volumes:
+      - miner2_data:/root/.bitcoin/data
+    networks:
+      bitcoin_net:
+        ipv4_address: 172.20.0.11
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Miner Node 3
+  miner3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-miner3
+    hostname: miner3
+    environment:
+      - NODE_ID=miner3
+      - RPC_PORT=8332
+      - P2P_PORT=8333
+      - DATA_DIR=/root/.bitcoin/data
+      - NETWORK=regtest
+      - MINER_ADDRESS=1JfbZRwdDHKZmuiZgYArJZhcuuzuw2HuMu
+      - MINING_ENABLED=true
+      - INITIAL_PEERS=miner1:8333,miner2:8333
+      - LOG_LEVEL=info
+      - AUTO_MINE=true
+      - MINE_INTERVAL=20
+    ports:
+      - "38332:8332"  # RPC
+      - "38333:8333"  # P2P
+    volumes:
+      - miner3_data:/root/.bitcoin/data
+    networks:
+      bitcoin_net:
+        ipv4_address: 172.20.0.12
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Full Node (non-mining) - For testing sync
+  fullnode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-fullnode
+    hostname: fullnode
+    environment:
+      - NODE_ID=fullnode
+      - RPC_PORT=8332
+      - P2P_PORT=8333
+      - DATA_DIR=/root/.bitcoin/data
+      - NETWORK=regtest
+      - MINING_ENABLED=false
+      - INITIAL_PEERS=miner1:8333,miner2:8333,miner3:8333
+      - LOG_LEVEL=info
+    ports:
+      - "48332:8332"  # RPC
+      - "48333:8333"  # P2P
+    volumes:
+      - fullnode_data:/root/.bitcoin/data
+    networks:
+      bitcoin_net:
+        ipv4_address: 172.20.0.13
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Monitoring/Explorer Node
+  explorer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-explorer
+    hostname: explorer
+    environment:
+      - NODE_ID=explorer
+      - RPC_PORT=8332
+      - P2P_PORT=8333
+      - DATA_DIR=/root/.bitcoin/data
+      - NETWORK=regtest
+      - MINING_ENABLED=false
+      - INITIAL_PEERS=miner1:8333,miner2:8333,miner3:8333
+      - LOG_LEVEL=debug
+      - ENABLE_MONITORING=true
+    ports:
+      - "58332:8332"  # RPC
+      - "58333:8333"  # P2P
+    volumes:
+      - explorer_data:/root/.bitcoin/data
+    networks:
+      bitcoin_net:
+        ipv4_address: 172.20.0.14
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Transaction Sender
+  tx-sender:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitcoin-tx-sender
+    environment:
+      - TARGET_URL=http://miner1:8332
+      - TO_ADDRESS=1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2
+      - AMOUNT=100000
+      - INTERVAL=3
+    networks:
+      bitcoin_net:
+    entrypoint: ["/bin/bash", "/usr/local/bin/scripts/auto-tx.sh"]
+    depends_on:
+      - miner1
+
+networks:
+  bitcoin_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  miner1_data:
+    driver: local
+  miner2_data:
+    driver: local
+  miner3_data:
+    driver: local
+  fullnode_data:
+    driver: local
+  explorer_data:
+    driver: local

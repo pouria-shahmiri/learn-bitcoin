@@ -9,8 +9,8 @@ import (
 const base58Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 var (
-	base58Base      = big.NewInt(58)
-	bigZero         = big.NewInt(0)
+	base58Base        = big.NewInt(58)
+	bigZero           = big.NewInt(0)
 	base58AlphabetMap [128]int8
 )
 
@@ -28,7 +28,7 @@ func init() {
 func EncodeBase58(data []byte) string {
 	// Convert bytes to big integer
 	x := new(big.Int).SetBytes(data)
-	
+
 	// Encode to base58
 	var result []byte
 	for x.Cmp(bigZero) > 0 {
@@ -36,7 +36,7 @@ func EncodeBase58(data []byte) string {
 		x.DivMod(x, base58Base, mod)
 		result = append(result, base58Alphabet[mod.Int64()])
 	}
-	
+
 	// Preserve leading zeros
 	for _, b := range data {
 		if b != 0 {
@@ -44,12 +44,12 @@ func EncodeBase58(data []byte) string {
 		}
 		result = append(result, base58Alphabet[0])
 	}
-	
+
 	// Reverse result
 	for i, j := 0, len(result)-1; i < j; i, j = i+1, j-1 {
 		result[i], result[j] = result[j], result[i]
 	}
-	
+
 	return string(result)
 }
 
@@ -58,7 +58,7 @@ func DecodeBase58(input string) ([]byte, error) {
 	if len(input) == 0 {
 		return nil, nil
 	}
-	
+
 	// Convert string to big integer
 	x := big.NewInt(0)
 	for _, c := range input {
@@ -68,10 +68,10 @@ func DecodeBase58(input string) ([]byte, error) {
 		x.Mul(x, base58Base)
 		x.Add(x, big.NewInt(int64(base58AlphabetMap[c])))
 	}
-	
+
 	// Convert to bytes
 	decoded := x.Bytes()
-	
+
 	// Preserve leading '1's (zeros)
 	for _, c := range input {
 		if c != rune(base58Alphabet[0]) {
@@ -79,7 +79,7 @@ func DecodeBase58(input string) ([]byte, error) {
 		}
 		decoded = append([]byte{0}, decoded...)
 	}
-	
+
 	return decoded, nil
 }
 

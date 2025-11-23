@@ -7,10 +7,10 @@ test:
 	@echo "Running tests..."
 	go test ./tests/... -v
 
-# Run demo program (default: phase 9)
+# Run demo program (default: phase 10)
 run:
-	@echo "Running Milestone 9..."
-	go run cmd/phase_9/main.go
+	@echo "Running Milestone 10..."
+	go run cmd/phase_10/main.go
 
 # Run individual phases
 phase1:
@@ -49,6 +49,39 @@ phase9:
 	@echo "Running Milestone 9..."
 	go run cmd/phase_9/main.go
 
+phase10:
+	@echo "Running Milestone 10..."
+	go run cmd/phase_10/main.go
+
+phase11:
+	@echo "Running Milestone 11..."
+	go run cmd/phase_11/main.go
+
+# Docker commands
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t bitcoin-node:latest .
+
+docker-up:
+	@echo "Starting Docker network..."
+	./scripts/start-testnet.sh
+
+docker-down:
+	@echo "Stopping Docker network..."
+	./scripts/stop-testnet.sh
+
+docker-clean:
+	@echo "Cleaning Docker network..."
+	./scripts/stop-testnet.sh --clean
+
+docker-logs:
+	@echo "Showing Docker logs..."
+	docker-compose logs -f
+
+docker-monitor:
+	@echo "Monitoring network..."
+	./scripts/monitor.sh
+
 # Format code
 fmt:
 	go fmt ./...
@@ -60,7 +93,7 @@ vet:
 # Clean build artifacts
 clean:
 	go clean
-	rm -f coverage.out
+	rm -f coverage.out bitcoin-node bitcoin-cli
 
 # Run tests with coverage
 coverage:

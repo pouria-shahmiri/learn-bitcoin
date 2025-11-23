@@ -23,16 +23,16 @@ func (cs *ChainState) GetBestBlockHash() (types.Hash, error) {
 	if err != nil {
 		return types.Hash{}, err
 	}
-	
+
 	if value == nil {
 		// No chain tip set (empty blockchain)
 		return types.Hash{}, nil
 	}
-	
+
 	if len(value) != 32 {
 		return types.Hash{}, fmt.Errorf("invalid best block hash length: %d", len(value))
 	}
-	
+
 	var hash types.Hash
 	copy(hash[:], value)
 	return hash, nil
@@ -51,16 +51,16 @@ func (cs *ChainState) GetBestBlockHeight() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	
+
 	if value == nil {
 		// No height set (empty blockchain)
 		return 0, nil
 	}
-	
+
 	if len(value) != 8 {
 		return 0, fmt.Errorf("invalid height length: %d", len(value))
 	}
-	
+
 	return binary.BigEndian.Uint64(value), nil
 }
 
@@ -75,17 +75,17 @@ func (cs *ChainState) SetBestBlockHeight(height uint64) error {
 // UpdateBestBlock atomically updates both hash and height
 func (cs *ChainState) UpdateBestBlock(hash types.Hash, height uint64) error {
 	batch := cs.db.NewBatch()
-	
+
 	// Update hash
 	hashKey := ChainStateKey(KeyBestBlockHash)
 	batch.Put(hashKey, hash[:])
-	
+
 	// Update height
 	heightKey := ChainStateKey(KeyBestBlockHeight)
 	heightValue := make([]byte, 8)
 	binary.BigEndian.PutUint64(heightValue, height)
 	batch.Put(heightKey, heightValue)
-	
+
 	return batch.Write()
 }
 

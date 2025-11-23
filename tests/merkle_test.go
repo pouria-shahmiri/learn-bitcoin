@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"testing"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/crypto"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/types"
+	"testing"
 )
 
 // Test single transaction (base case)
@@ -15,9 +15,9 @@ func TestMerkleRootSingleTx(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	
+
 	root := crypto.ComputeMerkleRoot([]types.Hash{hash})
-	
+
 	if root != hash {
 		t.Error("Single transaction: merkle root should equal transaction hash")
 	}
@@ -34,11 +34,11 @@ func TestMerkleRootEvenNumber(t *testing.T) {
 	)
 
 	root := crypto.ComputeMerkleRoot([]types.Hash{hash1, hash2})
-	
+
 	// Manually compute expected root
 	combined := append(hash1[:], hash2[:]...)
 	expected := crypto.DoubleSHA256(combined)
-	
+
 	if root != expected {
 		t.Errorf("Got %s, want %s", root, expected)
 	}
@@ -57,16 +57,16 @@ func TestMerkleRootOddNumber(t *testing.T) {
 	)
 
 	root := crypto.ComputeMerkleRoot([]types.Hash{hash1, hash2, hash3})
-	
+
 	// Compute expected (hash3 gets duplicated)
 	left := crypto.DoubleSHA256(append(hash1[:], hash2[:]...))
 	right := crypto.DoubleSHA256(append(hash3[:], hash3[:]...))
 	expected := crypto.DoubleSHA256(append(left[:], right[:]...))
-	
+
 	if root != expected {
 		t.Errorf("Got %s, want %s", root, expected)
 	}
-	
+
 	t.Logf("Merkle root for 3 transactions: %s", root)
 }
 
@@ -78,7 +78,7 @@ func TestMerkleTreeStructure(t *testing.T) {
 	}
 
 	tree := crypto.BuildMerkleTree(hashes)
-	
+
 	// Should have 3 levels for 4 transactions
 	// Level 0: 4 hashes
 	// Level 1: 2 hashes
@@ -86,7 +86,7 @@ func TestMerkleTreeStructure(t *testing.T) {
 	if len(tree) != 3 {
 		t.Errorf("Expected 3 levels, got %d", len(tree))
 	}
-	
+
 	if len(tree[0]) != 4 {
 		t.Error("Level 0 should have 4 hashes")
 	}

@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+
+# Data directories
+data/
+*.db
+
+# Build artifacts
+*.exe
+*.test
+*.out
+bitcoin-cli
+bitcoin-node
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Test files
+tests/
+*_test.go
+
+# Scripts (not needed in container)
+# Scripts (not needed in container)
+# scripts/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Misc
+.env
+*.log
+coverage.out

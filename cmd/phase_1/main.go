@@ -13,17 +13,17 @@ func main() {
 
 	// Demo 1: Create and hash a simple transaction
 	demoSimpleTransaction()
-	
+
 	// Demo 2: Build a block with Merkle tree
 	demoBlockWithMerkleTree()
-	
+
 	// Demo 3: Genesis block recreation
 	demoGenesisBlock()
 }
 
 func demoSimpleTransaction() {
 	fmt.Println("--- Demo 1: Simple Transaction ---")
-	
+
 	// Create a coinbase transaction (mining reward)
 	tx := &types.Transaction{
 		Version: 1,
@@ -51,15 +51,15 @@ func demoSimpleTransaction() {
 	}
 
 	fmt.Printf("Transaction ID: %s\n", txHash)
-	fmt.Printf("Output Value: %d satoshis (%.8f BTC)\n", 
-		tx.Outputs[0].Value, 
+	fmt.Printf("Output Value: %d satoshis (%.8f BTC)\n",
+		tx.Outputs[0].Value,
 		float64(tx.Outputs[0].Value)/100000000)
 	fmt.Println()
 }
 
 func demoBlockWithMerkleTree() {
 	fmt.Println("--- Demo 2: Block with Merkle Tree ---")
-	
+
 	// Create 3 transactions
 	txs := []*types.Transaction{
 		createTransaction("Coinbase reward", 5000000000),
@@ -90,7 +90,7 @@ func demoBlockWithMerkleTree() {
 
 func demoGenesisBlock() {
 	fmt.Println("--- Demo 3: Genesis Block Recreation ---")
-	
+
 	// Create genesis coinbase transaction
 	genesisTx := &types.Transaction{
 		Version: 1,
@@ -129,7 +129,7 @@ func demoGenesisBlock() {
 
 	genesisHash, _ := serialization.HashBlockHeader(genesisHeader)
 	fmt.Printf("Genesis Block Hash: %s\n", genesisHash)
-	
+
 	// Display in human-readable format
 	fmt.Println("\nGenesis Block Details:")
 	fmt.Printf("  Version: %d\n", genesisHeader.Version)
@@ -138,7 +138,7 @@ func demoGenesisBlock() {
 	fmt.Printf("  Timestamp: %d (Jan 3, 2009)\n", genesisHeader.Timestamp)
 	fmt.Printf("  Difficulty: 0x%x\n", genesisHeader.Bits)
 	fmt.Printf("  Nonce: %d\n", genesisHeader.Nonce)
-	
+
 	// Count leading zero bytes
 	leadingZeros := countLeadingZeroBytes(genesisHash)
 	fmt.Printf("\nLeading zero bytes: %d\n", leadingZeros)

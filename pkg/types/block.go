@@ -16,9 +16,6 @@ type Block struct {
 	Transactions []Transaction // All transactions in block
 }
 
-
-
-
 /*
 
 **Critical understanding:**
@@ -51,4 +48,3 @@ Block Header (80 bytes):
     Links blocks together
 
 */
-

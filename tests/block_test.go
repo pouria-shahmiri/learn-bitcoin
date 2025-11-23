@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"testing"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/serialization"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/types"
+	"testing"
 )
 
 // Test genesis block header
@@ -28,12 +28,12 @@ func TestGenesisBlockHeader(t *testing.T) {
 	// Genesis block hash (note: displayed in reverse byte order)
 	// Internal: 6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000
 	// Displayed: 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
-	
+
 	expectedHash := "6fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d6190000000000"
-	
+
 	t.Logf("Genesis block hash: %s", hash)
 	t.Logf("Expected: %s", expectedHash)
-	
+
 	// Verify it starts with many zeros (low difficulty in 2009)
 	if !hasLeadingZeros(hash, 5) {
 		t.Error("Genesis hash should have leading zeros")
@@ -73,7 +73,7 @@ func TestNonceChangesHash(t *testing.T) {
 	}
 
 	hash1, _ := serialization.HashBlockHeader(header)
-	
+
 	header.Nonce = 1
 	hash2, _ := serialization.HashBlockHeader(header)
 

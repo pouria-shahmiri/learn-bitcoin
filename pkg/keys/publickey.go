@@ -3,7 +3,7 @@ package keys
 import (
 	"crypto/sha256"
 	"fmt"
-	
+
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"golang.org/x/crypto/ripemd160"
 )
@@ -26,11 +26,11 @@ func (pub *PublicKey) Bytes(compressed bool) []byte {
 func (pub *PublicKey) Hash160() []byte {
 	// Step 1: SHA-256
 	sha := sha256.Sum256(pub.Bytes(true))
-	
+
 	// Step 2: RIPEMD-160
 	ripe := ripemd160.New()
 	ripe.Write(sha[:])
-	
+
 	return ripe.Sum(nil)
 }
 
@@ -51,6 +51,6 @@ func (pub *PublicKey) Verify(hash []byte, sig *Signature) bool {
 	if len(hash) != 32 {
 		return false
 	}
-	
+
 	return sig.sig.Verify(hash, pub.key)
 }

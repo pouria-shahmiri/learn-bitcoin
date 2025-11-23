@@ -2,7 +2,7 @@ package keys
 
 import (
 	"fmt"
-	
+
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/ecdsa"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/encoding"
@@ -19,7 +19,7 @@ func GeneratePrivateKey() (*PrivateKey, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate private key: %w", err)
 	}
-	
+
 	return &PrivateKey{key: key}, nil
 }
 
@@ -28,7 +28,7 @@ func NewPrivateKeyFromBytes(data []byte) (*PrivateKey, error) {
 	if len(data) != 32 {
 		return nil, fmt.Errorf("private key must be 32 bytes, got %d", len(data))
 	}
-	
+
 	key := secp256k1.PrivKeyFromBytes(data)
 	return &PrivateKey{key: key}, nil
 }
@@ -50,14 +50,14 @@ func (pk *PrivateKey) PublicKey() *PublicKey {
 func (pk *PrivateKey) ToWIF(compressed bool) string {
 	// Mainnet private key version byte is 0x80
 	version := byte(0x80)
-	
+
 	data := pk.Bytes()
-	
+
 	// Add compression flag if compressed
 	if compressed {
 		data = append(data, 0x01)
 	}
-	
+
 	return encoding.EncodeBase58Check(version, data)
 }
 
@@ -67,12 +67,12 @@ func FromWIF(wif string) (*PrivateKey, bool, error) {
 	if err != nil {
 		return nil, false, fmt.Errorf("invalid WIF: %w", err)
 	}
-	
+
 	// Check version byte (0x80 for mainnet)
 	if version != 0x80 {
 		return nil, false, fmt.Errorf("invalid WIF version: %x", version)
 	}
-	
+
 	// Check length and compression flag
 	compressed := false
 	if len(data) == 33 && data[32] == 0x01 {
@@ -81,12 +81,12 @@ func FromWIF(wif string) (*PrivateKey, bool, error) {
 	} else if len(data) != 32 {
 		return nil, false, fmt.Errorf("invalid WIF key length: %d", len(data))
 	}
-	
+
 	key, err := NewPrivateKeyFromBytes(data)
 	if err != nil {
 		return nil, false, err
 	}
-	
+
 	return key, compressed, nil
 }
 
@@ -95,9 +95,9 @@ func (pk *PrivateKey) Sign(hash []byte) (*Signature, error) {
 	if len(hash) != 32 {
 		return nil, fmt.Errorf("hash must be 32 bytes, got %d", len(hash))
 	}
-	
+
 	sig := ecdsa.Sign(pk.key, hash)
-	
+
 	return &Signature{sig: sig}, nil
 }
 

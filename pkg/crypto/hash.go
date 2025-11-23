@@ -10,10 +10,10 @@ import (
 func DoubleSHA256(data []byte) types.Hash {
 	// First hash
 	firstHash := sha256.Sum256(data)
-	
+
 	// Hash the hash
 	secondHash := sha256.Sum256(firstHash[:])
-	
+
 	return secondHash
 }
 
@@ -26,8 +26,6 @@ func HashTransaction(data []byte) types.Hash {
 func HashBlockHeader(data []byte) types.Hash {
 	return DoubleSHA256(data)
 }
-
-
 
 /*
 

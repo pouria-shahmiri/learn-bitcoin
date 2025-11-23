@@ -1,0 +1,46 @@
+# Bitcoin Node Configuration Template
+# Copy this file to .env and customize as needed
+
+# Node Identity
+NODE_ID=bitcoin-node
+
+# Network Configuration
+NETWORK=regtest                    # mainnet, testnet, or regtest
+RPC_PORT=8332                      # RPC server port
+P2P_PORT=8333                      # P2P network port
+INITIAL_PEERS=                     # Comma-separated list of peer addresses
+
+# Storage
+DATA_DIR=./data/node              # Data directory path
+
+# Mining Configuration
+MINING_ENABLED=false              # Enable mining
+MINER_ADDRESS=                    # Address to receive mining rewards
+AUTO_MINE=false                   # Automatically mine blocks
+MINE_INTERVAL=10                  # Interval between auto-mining attempts (seconds)
+
+# Logging
+LOG_LEVEL=info                    # debug, info, warn, error
+
+# Monitoring
+ENABLE_MONITORING=false           # Enable monitoring/metrics
+
+# Example configurations for different node types:
+
+# === Mining Node ===
+# NODE_ID=miner1
+# MINING_ENABLED=true
+# MINER_ADDRESS=1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+# AUTO_MINE=true
+# MINE_INTERVAL=10
+
+# === Full Node (non-mining) ===
+# NODE_ID=fullnode
+# MINING_ENABLED=false
+# INITIAL_PEERS=localhost:18333,localhost:28333
+
+# === Explorer/Monitoring Node ===
+# NODE_ID=explorer
+# MINING_ENABLED=false
+# LOG_LEVEL=debug
+# ENABLE_MONITORING=true

@@ -163,9 +163,9 @@ func demoRetrieveBlocks(dbPath string) {
 		}
 
 		blockHash, _ := serialization.HashBlockHeader(&block.Header)
-		fmt.Printf("  Height %d: %s (%d txs)\n", 
-			height, 
-			blockHash.String()[:16]+"...", 
+		fmt.Printf("  Height %d: %s (%d txs)\n",
+			height,
+			blockHash.String()[:16]+"...",
 			len(block.Transactions))
 	}
 

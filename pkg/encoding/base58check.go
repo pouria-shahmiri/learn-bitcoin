@@ -12,13 +12,13 @@ func EncodeBase58Check(version byte, data []byte) string {
 	payload := make([]byte, 1+len(data))
 	payload[0] = version
 	copy(payload[1:], data)
-	
+
 	// Calculate checksum (first 4 bytes of double SHA-256)
 	checksum := doubleSHA256(payload)[:4]
-	
+
 	// Append checksum
 	fullPayload := append(payload, checksum...)
-	
+
 	return EncodeBase58(fullPayload)
 }
 
@@ -28,15 +28,15 @@ func DecodeBase58Check(input string) (version byte, data []byte, err error) {
 	if err != nil {
 		return 0, nil, err
 	}
-	
+
 	if len(decoded) < 5 {
 		return 0, nil, errors.New("decoded data too short")
 	}
-	
+
 	// Split payload and checksum
 	payload := decoded[:len(decoded)-4]
 	checksum := decoded[len(decoded)-4:]
-	
+
 	// Verify checksum
 	expectedChecksum := doubleSHA256(payload)[:4]
 	for i := 0; i < 4; i++ {
@@ -44,11 +44,11 @@ func DecodeBase58Check(input string) (version byte, data []byte, err error) {
 			return 0, nil, errors.New("checksum mismatch")
 		}
 	}
-	
+
 	// Extract version and data
 	version = payload[0]
 	data = payload[1:]
-	
+
 	return version, data, nil
 }
 

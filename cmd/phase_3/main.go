@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
-	
+
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/keys"
 )
 

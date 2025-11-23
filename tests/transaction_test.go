@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"testing"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/crypto"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/serialization"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/types"
+	"testing"
 )
 
 // Test genesis block coinbase transaction
@@ -43,7 +43,7 @@ func TestGenesisTransaction(t *testing.T) {
 
 	// This is the actual genesis coinbase txid
 	expectedHash := "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"
-	
+
 	// Note: We won't match exactly because we simplified the scripts
 	// But hash should be deterministic
 	t.Logf("Genesis coinbase hash: %s", hash)

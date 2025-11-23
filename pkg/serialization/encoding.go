@@ -28,19 +28,19 @@ func WriteVarInt(w io.Writer, v uint64) error {
 	case v < 0xFD: // 0-252: use 1 byte
 		_, err := w.Write([]byte{byte(v)})
 		return err
-		
+
 	case v <= 0xFFFF: // 253-65535: use 3 bytes
 		if _, err := w.Write([]byte{0xFD}); err != nil {
 			return err
 		}
 		return binary.Write(w, binary.LittleEndian, uint16(v))
-		
+
 	case v <= 0xFFFFFFFF: // use 5 bytes
 		if _, err := w.Write([]byte{0xFE}); err != nil {
 			return err
 		}
 		return binary.Write(w, binary.LittleEndian, uint32(v))
-		
+
 	default: // use 9 bytes
 		if _, err := w.Write([]byte{0xFF}); err != nil {
 			return err
@@ -116,14 +116,13 @@ func ReadBytes(r io.Reader) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	data := make([]byte, length)
 	if _, err := io.ReadFull(r, data); err != nil {
 		return nil, err
 	}
 	return data, nil
 }
-
 
 /*
 ```

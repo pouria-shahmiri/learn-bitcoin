@@ -1,0 +1,27 @@
+# Binaries
+bitcoin-cli
+bitcoin-node
+*.exe
+*.test
+*.out
+
+# Data directories
+data/
+*.db
+*.log
+
+# Coverage
+coverage.out
+
+# Configuration
+config.yaml
+config.json
+.env
+
+# IDEs and System
+.DS_Store
+.vscode/
+.idea/
+
+# Go
+vendor/
