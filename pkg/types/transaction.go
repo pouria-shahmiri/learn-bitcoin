@@ -1,5 +1,9 @@
 package types
 
+import (
+	"fmt"
+)
+
 // TxInput represents where coins come from
 type TxInput struct {
 	PrevTxHash      Hash   // Which transaction created these coins?
@@ -14,6 +18,30 @@ type TxOutput struct {
 	PubKeyScript []byte // Conditions to spend (usually "pay to this address")
 }
 
+// OutPoint uniquely identifies a transaction output
+type OutPoint struct {
+	Hash  Hash   // Transaction hash
+	Index uint32 // Output index
+}
+
+// NewOutPoint creates a new outpoint
+func NewOutPoint(hash Hash, index uint32) OutPoint {
+	return OutPoint{
+		Hash:  hash,
+		Index: index,
+	}
+}
+
+// String returns string representation of outpoint
+func (op OutPoint) String() string {
+	return fmt.Sprintf("%s:%d", op.Hash, op.Index)
+}
+
+// Equal checks if two outpoints are equal
+func (op OutPoint) Equal(other OutPoint) bool {
+	return op.Hash == other.Hash && op.Index == other.Index
+}
+
 // Transaction is a value transfer
 type Transaction struct {
 	Version  int32      // Protocol version
@@ -21,7 +49,6 @@ type Transaction struct {
 	Outputs  []TxOutput // Where coins go
 	LockTime uint32     // When tx becomes valid (0 = immediately)
 }
-
 
 /*
 **Key concepts explained:**

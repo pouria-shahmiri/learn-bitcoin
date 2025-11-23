@@ -7,10 +7,10 @@ test:
 	@echo "Running tests..."
 	go test ./tests/... -v
 
-# Run demo program (default: phase 5)
+# Run demo program (default: phase 6)
 run:
-	@echo "Running Milestone 5..."
-	go run cmd/phase_5/main.go
+	@echo "Running Milestone 6..."
+	go run cmd/phase_6/main.go
 
 # Run individual phases
 phase1:
@@ -32,6 +32,10 @@ phase4:
 phase5:
 	@echo "Running Milestone 5..."
 	go run cmd/phase_5/main.go
+
+phase6:
+	@echo "Running Milestone 6..."
+	go run cmd/phase_6/main.go
 
 # Format code
 fmt:
