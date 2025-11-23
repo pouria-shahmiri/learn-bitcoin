@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/serialization"
 	"github.com/pouria-shahmiri/learn-bitcoin/pkg/types"
 )
@@ -20,7 +21,7 @@ func NewBlockchainStorage(dbPath string) (*BlockchainStorage, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &BlockchainStorage{
 		db:         db,
 		chainState: NewChainState(db),
@@ -39,42 +40,42 @@ func (bs *BlockchainStorage) SaveBlock(block *types.Block, height uint64) error 
 	if err != nil {
 		return fmt.Errorf("failed to hash block: %w", err)
 	}
-	
+
 	// Serialize block
 	serializedBlock, err := serializeBlock(block)
 	if err != nil {
 		return fmt.Errorf("failed to serialize block: %w", err)
 	}
-	
+
 	// Create atomic batch
 	batch := bs.db.NewBatch()
-	
+
 	// 1. Store block data
 	blockKey := BlockKey(blockHash)
 	batch.Put(blockKey, serializedBlock)
-	
+
 	// 2. Store height index
 	heightKey := HeightKey(height)
 	batch.Put(heightKey, blockHash[:])
-	
+
 	// 3. Store transaction indexes
 	for txIndex, tx := range block.Transactions {
 		txHash, err := serialization.HashTransaction(&tx)
 		if err != nil {
 			return fmt.Errorf("failed to hash transaction: %w", err)
 		}
-		
+
 		txKey := TxKey(txHash)
 		txLocation := serializeTxLocation(blockHash, uint32(txIndex))
 		batch.Put(txKey, txLocation)
 	}
-	
+
 	// 4. Update chain state (if this is new tip)
 	batch.Put(ChainStateKey(KeyBestBlockHash), blockHash[:])
 	heightBytes := make([]byte, 8)
 	binary.BigEndian.PutUint64(heightBytes, height)
 	batch.Put(ChainStateKey(KeyBestBlockHeight), heightBytes)
-	
+
 	// Commit everything atomically
 	return batch.Write()
 }
@@ -86,11 +87,11 @@ func (bs *BlockchainStorage) GetBlock(hash types.Hash) (*types.Block, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if value == nil {
 		return nil, fmt.Errorf("block not found: %s", hash)
 	}
-	
+
 	return deserializeBlock(value)
 }
 
@@ -102,14 +103,14 @@ func (bs *BlockchainStorage) GetBlockByHeight(height uint64) (*types.Block, erro
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if hashBytes == nil {
 		return nil, fmt.Errorf("no block at height %d", height)
 	}
-	
+
 	var hash types.Hash
 	copy(hash[:], hashBytes)
-	
+
 	// Then get block by hash
 	return bs.GetBlock(hash)
 }
@@ -126,21 +127,21 @@ func (bs *BlockchainStorage) GetBestBlock() (*types.Block, uint64, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	if hash.IsZero() {
 		return nil, 0, fmt.Errorf("blockchain is empty")
 	}
-	
+
 	height, err := bs.chainState.GetBestBlockHeight()
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	block, err := bs.GetBlock(hash)
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	return block, height, nil
 }
 
@@ -151,11 +152,11 @@ func (bs *BlockchainStorage) GetTransactionLocation(txHash types.Hash) (blockHas
 	if err != nil {
 		return types.Hash{}, 0, err
 	}
-	
+
 	if value == nil {
 		return types.Hash{}, 0, fmt.Errorf("transaction not found: %s", txHash)
 	}
-	
+
 	return deserializeTxLocation(value)
 }
 
@@ -190,19 +191,19 @@ func (bs *BlockchainStorage) IsEmpty() (bool, error) {
 // Helper: Serialize block
 func serializeBlock(block *types.Block) ([]byte, error) {
 	var buf bytes.Buffer
-	
+
 	// Serialize header
 	headerBytes, err := serialization.SerializeBlockHeader(&block.Header)
 	if err != nil {
 		return nil, err
 	}
 	buf.Write(headerBytes)
-	
+
 	// Transaction count
 	if err := serialization.WriteVarInt(&buf, uint64(len(block.Transactions))); err != nil {
 		return nil, err
 	}
-	
+
 	// Serialize each transaction
 	for _, tx := range block.Transactions {
 		txBytes, err := serialization.SerializeTransaction(&tx)
@@ -211,24 +212,24 @@ func serializeBlock(block *types.Block) ([]byte, error) {
 		}
 		buf.Write(txBytes)
 	}
-	
+
 	return buf.Bytes(), nil
 }
 
 // Helper: Deserialize block
 func deserializeBlock(data []byte) (*types.Block, error) {
 	r := bytes.NewReader(data)
-	
+
 	header, err := serialization.DeserializeBlockHeader(r)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	txCount, err := serialization.ReadVarInt(r)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	txs := make([]types.Transaction, txCount)
 	for i := uint64(0); i < txCount; i++ {
 		tx, err := serialization.DeserializeTransaction(r)
@@ -237,7 +238,7 @@ func deserializeBlock(data []byte) (*types.Block, error) {
 		}
 		txs[i] = *tx
 	}
-	
+
 	return &types.Block{
 		Header:       *header,
 		Transactions: txs,
@@ -257,10 +258,15 @@ func deserializeTxLocation(data []byte) (types.Hash, uint32, error) {
 	if len(data) != 36 {
 		return types.Hash{}, 0, fmt.Errorf("invalid tx location length: %d", len(data))
 	}
-	
+
 	var hash types.Hash
 	copy(hash[:], data[0:32])
 	index := binary.BigEndian.Uint32(data[32:])
-	
+
 	return hash, index, nil
+}
+
+// GetBlockHash returns the hash of a block
+func (bs *BlockchainStorage) GetBlockHash(block *types.Block) (types.Hash, error) {
+	return serialization.HashBlockHeader(&block.Header)
 }
